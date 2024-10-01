@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect, useState } from "react";
 import { Monster } from "../interfaces/Monster";
 import HyruleCompendium from "../components/HyruleCompendium.tsx";
 import styled from "styled-components";
