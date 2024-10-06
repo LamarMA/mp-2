@@ -1,43 +1,31 @@
-import React from "react";
-import { Monster } from "../interfaces/Monster";
+import useSWR from "swr";
 import HyruleCompendium from "../components/HyruleCompendium.tsx";
 import styled from "styled-components";
-import './App.css'
 
 const ParentDiv = styled.div`
-    width: 80vw;
     margin: auto;
-    border: 5px red solid;
+    border: 5px black solid;
+`;
+
+const CommentDiv = styled.div`
+    text-align: center;
+    margin: auto;
+    border: 5px blue solid;
 `;
 export default function App() {
-  const [data, setData] = React.useState<Monster[] | undefined>(undefined);
+  // here's where all the fetching actually happens
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data, error } = useSWR("https://botw-compendium.herokuapp.com/api/v3/compendium", fetcher);
 
-  // async func to fetch data
-  const fetchData = async () => {
-    const response = await fetch('https://botw-compendium.herokuapp.com/api/v3/compendium/category/monsters');
-    const result = await response.json();
-    return result.data;
-  };
-
-
-  React.useEffect(() => {
-    fetchData()
-      .then(fetchedData => {
-        console.log("Data fetched successfully");
-        setData(fetchedData);
-      })
-      .catch(error => console.error(error));
-  }, []);
-
-  // handle undefined data
-  if (!data) {
-    return <div>Loading...</div>;
-  }
+  if (error) return <h1>Error: {error.message}</h1>;
+  if (!data) return <h1>Loading...</h1>;
 
   return (
     <ParentDiv>
-      <p>Total monsters: {data.length}</p>
-      <HyruleCompendium data={data} />
+      <CommentDiv>
+        <p> Hello ! Here are all the entries from the Hyrule Compendium. You will notice that the backgrounds correspond to the category of the entry! </p>
+      </CommentDiv>
+      <HyruleCompendium allEntries={data.data} />
     </ParentDiv>
   );
 }
